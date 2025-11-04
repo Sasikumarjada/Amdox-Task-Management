@@ -1,361 +1,172 @@
-# 🚀 Amdox Task Management System
+# Amdox Task Management System - Replit Setup
 
-A comprehensive full-stack task management application built with Java Spring Boot, featuring role-based access control, real-time notifications, and collaborative task management.
+## Overview
+A comprehensive Java Spring Boot task management application with JWT authentication, role-based access control, and real-time notifications via WebSocket. The system supports task assignment, prioritization, deadline tracking, comments, and file attachments.
 
-## ✨ Features
+## Recent Changes (November 4, 2025)
+- Migrated from MySQL to PostgreSQL for Replit compatibility
+- Updated server configuration to run on port 5000 with 0.0.0.0 binding
+- Configured database connection to use Replit's PostgreSQL environment variables
+- Made email configuration optional (requires MAIL_* environment variables if needed)
+- Set up Maven build and Spring Boot workflow
 
-### Core Features
-- **Task Assignment and Prioritization**: Assign tasks to team members with clear deadlines and priority levels (LOW, MEDIUM, HIGH, URGENT)
-- **Role-Based Permissions**: Three-tier access control system (ADMIN, EDITOR, VIEWER)
-- **Deadline Tracking and Notifications**: Automated email reminders for upcoming deadlines
-- **Real-Time Collaboration**: WebSocket-based real-time updates, comments, and file sharing
-- **Progress Reporting**: Analytics and reports on task completion and team performance
-- **Secure Authentication**: JWT-based authentication and authorization
+## Project Architecture
 
-### Additional Features
-- Kanban board support (TODO, IN_PROGRESS, REVIEW, COMPLETED, BLOCKED)
-- Task comments and discussions
-- File attachments
-- User notifications system
-- Task search and filtering
-- Email notifications
-- Deadline reminders
-
-## 🛠️ Technology Stack
-
+### Technology Stack
 - **Backend**: Java 17, Spring Boot 3.2.0
-- **Security**: Spring Security, JWT
-- **Database**: MySQL
+- **Security**: Spring Security with JWT authentication
+- **Database**: PostgreSQL (via Replit managed database)
 - **ORM**: JPA/Hibernate
 - **Build Tool**: Maven
-- **Email**: Spring Mail
-- **Real-time**: WebSocket
-- **API**: RESTful APIs
+- **Real-time**: WebSocket for notifications
+- **Email**: Spring Mail (optional)
 
-## 📋 Prerequisites
-
-Before you begin, ensure you have the following installed:
-- Java 17 or higher
-- Maven 3.6+
-- MySQL 8.0+
-- Git
-- IDE (IntelliJ IDEA, Eclipse, or VS Code)
-
-## 🚀 Installation & Setup
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/amdox-task-management.git
-cd amdox-task-management
+### Project Structure
+```
+src/main/java/com/amdox/taskmanagement/
+├── config/              # WebSocket and other configurations
+├── controller/          # REST API endpoints
+│   ├── AuthController.java
+│   ├── TaskController.java
+│   ├── CommentController.java
+│   ├── UserController.java
+│   └── NotificationController.java
+├── dto/                 # Data Transfer Objects
+├── entity/              # JPA entities (User, Task, Comment, etc.)
+├── repository/          # Spring Data JPA repositories
+├── security/            # JWT and Spring Security configuration
+└── service/             # Business logic layer
 ```
 
-### 2. Configure Database
+### Key Features
+1. **Authentication & Authorization**
+   - JWT-based authentication
+   - Three user roles: ADMIN, EDITOR, VIEWER
+   - Secure password hashing
 
-Create a MySQL database:
+2. **Task Management**
+   - CRUD operations for tasks
+   - Task status tracking (TODO, IN_PROGRESS, REVIEW, COMPLETED, BLOCKED)
+   - Priority levels (LOW, MEDIUM, HIGH, URGENT)
+   - Deadline management with automated reminders
+   - Task assignment to users
 
-```sql
-CREATE DATABASE amdox_task_db;
-```
+3. **Collaboration**
+   - Task comments
+   - File attachments
+   - Real-time notifications via WebSocket
 
-Update `src/main/resources/application.properties`:
+4. **Notifications**
+   - In-app notification system
+   - Email notifications (optional)
+   - Scheduled deadline reminders
 
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/amdox_task_db?createDatabaseIfNotExist=true
-spring.datasource.username=YOUR_MYSQL_USERNAME
-spring.datasource.password=YOUR_MYSQL_PASSWORD
-```
+## Environment Setup
 
-### 3. Configure Email (Optional)
+### Required Environment Variables
+- `DATABASE_URL` - PostgreSQL connection string (automatically provided by Replit)
+- `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE` - PostgreSQL credentials (automatically provided)
 
-For email notifications, update the email configuration in `application.properties`:
+### Optional Email Configuration
+If you want email notifications, add these secrets:
+- `MAIL_HOST` - SMTP server (default: smtp.gmail.com)
+- `MAIL_PORT` - SMTP port (default: 587)
+- `MAIL_USERNAME` - Email account
+- `MAIL_PASSWORD` - Email password or app-specific password
 
-```properties
-spring.mail.username=your_email@gmail.com
-spring.mail.password=your_app_password
-```
+### JWT Configuration
+The JWT secret is configured in `application.properties`. For production, update:
+- `jwt.secret` - Change to a secure random value
+- `jwt.expiration` - Token expiration time in milliseconds (default: 24 hours)
 
-To generate Gmail App Password:
-1. Go to Google Account Settings
-2. Security > 2-Step Verification
-3. App Passwords > Generate new password
-
-### 4. Build the Project
-
-```bash
-mvn clean install
-```
-
-### 5. Run the Application
-
-```bash
-mvn spring-boot:run
-```
-
-Or run the JAR file:
-
-```bash
-java -jar target/task-management-1.0.0.jar
-```
-
-The application will start on **http://localhost:8080**
-
-## 📁 Project Structure
-
-```
-amdox-task-management/
-├── src/main/java/com/amdox/taskmanagement/
-│   ├── config/              # Configuration classes
-│   │   └── WebSocketConfig.java
-│   ├── controller/          # REST API controllers
-│   │   ├── AuthController.java
-│   │   ├── TaskController.java
-│   │   ├── CommentController.java
-│   │   ├── UserController.java
-│   │   └── NotificationController.java
-│   ├── dto/                 # Data Transfer Objects
-│   │   ├── TaskRequest.java
-│   │   ├── TaskResponse.java
-│   │   ├── AuthResponse.java
-│   │   └── ...
-│   ├── entity/              # Database entities
-│   │   ├── User.java
-│   │   ├── Task.java
-│   │   ├── Comment.java
-│   │   ├── Attachment.java
-│   │   └── Notification.java
-│   ├── repository/          # Data access layer
-│   │   ├── UserRepository.java
-│   │   ├── TaskRepository.java
-│   │   └── ...
-│   ├── security/            # Security configuration
-│   │   ├── SecurityConfig.java
-│   │   ├── JwtUtil.java
-│   │   ├── JwtAuthenticationFilter.java
-│   │   └── CustomUserDetailsService.java
-│   ├── service/             # Business logic
-│   │   ├── TaskService.java
-│   │   ├── AuthService.java
-│   │   ├── CommentService.java
-│   │   ├── EmailService.java
-│   │   └── SchedulerService.java
-│   └── AmdoxTaskManagementApplication.java
-├── src/main/resources/
-│   └── application.properties
-└── pom.xml
-```
-
-## 🔐 API Endpoints
+## API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
+- `POST /api/auth/login` - Login and receive JWT token
 
 ### Tasks
 - `GET /api/tasks` - Get all tasks
-- `GET /api/tasks/{id}` - Get task by ID
+- `GET /api/tasks/{id}` - Get specific task
 - `GET /api/tasks/my-tasks` - Get current user's tasks
-- `GET /api/tasks/status/{status}` - Get tasks by status
-- `POST /api/tasks` - Create new task
+- `GET /api/tasks/status/{status}` - Filter by status
+- `POST /api/tasks` - Create task
 - `PUT /api/tasks/{id}` - Update task
 - `DELETE /api/tasks/{id}` - Delete task
 
 ### Comments
-- `GET /api/comments/task/{taskId}` - Get comments for a task
+- `GET /api/comments/task/{taskId}` - Get task comments
 - `POST /api/comments` - Add comment
 - `DELETE /api/comments/{id}` - Delete comment
 
 ### Users
-- `GET /api/users` - Get all users
-- `GET /api/users/{id}` - Get user by ID
+- `GET /api/users` - List all users
+- `GET /api/users/{id}` - Get user details
 - `PUT /api/users/{id}/role` - Update user role (Admin only)
 - `PUT /api/users/{id}/status` - Enable/disable user (Admin only)
 
 ### Notifications
 - `GET /api/notifications` - Get all notifications
 - `GET /api/notifications/unread` - Get unread notifications
-- `GET /api/notifications/unread/count` - Get unread count
+- `GET /api/notifications/unread/count` - Count unread
 - `PUT /api/notifications/{id}/read` - Mark as read
 - `PUT /api/notifications/read-all` - Mark all as read
 
-## 🔑 Authentication
-
-Include JWT token in request headers:
-
-```
-Authorization: Bearer YOUR_JWT_TOKEN
-```
-
-## 👥 User Roles
-
-1. **ADMIN**
-   - Full system access
-   - Manage all users
-   - Create, update, delete any task
-   - Assign roles
-
-2. **EDITOR**
-   - Create and manage own tasks
-   - Update assigned tasks
-   - Add comments
-   - View all tasks
-
-3. **VIEWER**
-   - View assigned tasks
-   - View comments
-   - Limited editing
-
-## 🧪 Testing
-
-Test the API using tools like:
-- **Postman** - Import the collection
-- **cURL** - Command line testing
-- **Swagger UI** (if configured)
-
-### Sample Registration Request:
-
-```json
-POST /api/auth/register
-{
-  "username": "john_doe",
-  "email": "john@example.com",
-  "password": "password123",
-  "fullName": "John Doe"
-}
-```
-
-### Sample Task Creation:
-
-```json
-POST /api/tasks
-Headers: Authorization: Bearer YOUR_TOKEN
-{
-  "title": "Complete Project Documentation",
-  "description": "Write comprehensive documentation",
-  "priority": "HIGH",
-  "deadline": "2024-12-31T23:59:59",
-  "assignedToId": 2,
-  "category": "Documentation",
-  "tags": "urgent,documentation"
-}
-```
-
-## 📤 Push to GitHub
-
-### First Time Setup
-
-1. **Create a new repository on GitHub**
-   - Go to https://github.com/new
-   - Name it: `amdox-task-management`
-   - Don't initialize with README
-
-2. **Initialize Git and push**:
-
-```bash
-# Initialize git repository
-git init
-
-# Add all files
-git add .
-
-# Commit
-git commit -m "Initial commit: Amdox Task Management System"
-
-# Add remote repository
-git remote add origin https://github.com/YOUR_USERNAME/amdox-task-management.git
-
-# Push to GitHub
-git branch -M main
-git push -u origin main
-```
-
-### Update Existing Repository
-
-```bash
-# Add changes
-git add .
-
-# Commit changes
-git commit -m "Your commit message"
-
-# Push to GitHub
-git push origin main
-```
-
-## 🔧 Configuration
-
-### Change Server Port
-
-Edit `application.properties`:
-```properties
-server.port=8081
-```
-
-### Enable H2 Database (for testing)
-
-Replace MySQL config with:
-```properties
-spring.datasource.url=jdbc:h2:mem:testdb
-spring.datasource.driverClassName=org.h2.Driver
-spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
-```
-
-## 📊 Database Schema
-
-The application automatically creates the following tables:
-- `users` - User information
-- `tasks` - Task details
+## Database Schema
+Hibernate auto-creates these tables on startup:
+- `users` - User accounts with roles
+- `tasks` - Task details and status
 - `comments` - Task comments
 - `attachments` - File attachments
 - `notifications` - User notifications
 
-## 🐛 Troubleshooting
+## Testing the API
 
-### Port Already in Use
+1. **Register a user**:
 ```bash
-# Find process using port 8080
-lsof -i :8080
-# Kill the process
-kill -9 PID
+curl -X POST http://localhost:5000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "email": "admin@example.com",
+    "password": "admin123",
+    "fullName": "Admin User"
+  }'
 ```
 
-### Database Connection Error
-- Verify MySQL is running
-- Check username/password
-- Ensure database exists
+2. **Login to get JWT token**:
+```bash
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "password": "admin123"
+  }'
+```
 
-### JWT Token Expiration
-- Default expiration: 24 hours
-- Update in `application.properties`: `jwt.expiration=86400000`
+3. **Create a task** (use token from login):
+```bash
+curl -X POST http://localhost:5000/api/tasks \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "title": "Setup Development Environment",
+    "description": "Install all required tools",
+    "priority": "HIGH",
+    "deadline": "2025-12-31T23:59:59"
+  }'
+```
 
-## 🤝 Contributing
+## User Preferences
+- Clean, production-ready code
+- Follow Spring Boot best practices
+- Comprehensive error handling
+- Secure authentication and authorization
+- RESTful API design
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License.
-
-## 👨‍💻 Author
-
-**Your Name**
-- GitHub: [https://github.com/Sasikumarjada/Amdox-Task-Management/edit/main/README.md]
-- Email: sasikumarjada2004@gmail.com
-
-## 🙏 Acknowledgments
-
-- Spring Boot Documentation
-- JWT Authentication Best Practices
-- MySQL Database
-
-## 📞 Support
-
-For support, email your.email@example.com or create an issue in the GitHub repository.
-
----
-
-**Built with ❤️ using Java Spring Boot**
+## Notes
+- The application runs on port 5000 (required for Replit web preview)
+- Database tables are auto-created on first run
+- First registered user gets VIEWER role (manually update to ADMIN via database)
+- Email notifications are optional and disabled by default
+- JWT tokens expire after 24 hours by default
