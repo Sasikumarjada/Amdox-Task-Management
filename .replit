@@ -1,0 +1,47 @@
+modules = ["java-graalvm22.3"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Spring Boot Application"
+
+[[workflows.workflow]]
+name = "Spring Boot Application"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "mvn spring-boot:run"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 34513
+externalPort = 3001
+
+[[ports]]
+localPort = 35729
+externalPort = 3000
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["java", "-jar", "target/task-management-1.0.0.jar"]
+build = ["mvn", "clean", "package", "-DskipTests"]
